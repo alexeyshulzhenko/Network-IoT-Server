@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS hosts (
+CREATE TABLE IF NOT EXISTS hosts(
     ID int NOT NULL AUTO_INCREMENT,
     mac varchar(255) NOT NULL,
     name varchar(255),
@@ -7,3 +7,6 @@ CREATE TABLE IF NOT EXISTS hosts (
 
 INSERT INTO hosts (name, mac)
 VALUES ("Iphone Aleksey", "78:4f:43:1d:ab:d7");
+
+INSERT INTO hosts (name, mac)
+VALUES ("Global Cache", "00:0C:1E:02:B7:65");

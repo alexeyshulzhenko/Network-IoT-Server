@@ -119,37 +119,18 @@ def parseConfigFile():
 
 
 
-def getKnownDevices():
-  # prepare a cursor object using cursor() method
-  cursor = database.db.cursor()
-  
-  sql = "select * from hosts"
-  try:
-    # Execute the SQL command
-    cursor.execute(sql)
-    # Fetch all the rows in a list of lists.
-    results = cursor.fetchall()
-    for row in results:
-      id = row[0]
-      mac = row[1]
-      name = row[2]
-      # Now print fetched result
-      print "name=%s,mac=%s,name=%s" % \
-            (name, mac, name)
-  except:
-    print "Error: unable to fecth data"
-
-  return
 
 ##################################################################################################################################################################################################
 # Entry point
 if __name__ == "__main__":
 
-  SlackConfig, KNOWN_HOSTS = parseConfigFile()
+  SlackConfig, KNOWN_HOSTS_2 = parseConfigFile()
 
+  KNOWN_HOSTS = database.getKnownDevicesList()
   # Initialize. Noone is here yet
   activeHosts = set()
 
+  print KNOWN_HOSTS
   while True:
 
     scannedHosts = [host["mac"] for host in scan() if "mac" in host]
