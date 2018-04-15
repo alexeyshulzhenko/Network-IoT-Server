@@ -1,0 +1,12 @@
+{
+  "slack" : {
+    "webhook_url" : "https://hooks.slack.com/services/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",
+    "channel" : "#general",
+    "botname" : "Secret Office Surveillance Bot"
+  },
+  "hosts" : {
+    "Iphone Aleksey" : ["78:4f:43:1d:ab:d7"],
+    "Global Cache" : ["00:0C:1E:02:B7:65"],
+    "Spalna" : ["c8:69:cd:53:7d:f3"]
+  }
+}
