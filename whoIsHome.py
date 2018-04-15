@@ -117,6 +117,30 @@ def parseConfigFile():
 
   return slackConfig, known_hosts
 
+
+
+def getKnownDevices():
+  # prepare a cursor object using cursor() method
+  cursor = database.db.cursor()
+  
+  sql = "select * from hosts"
+  try:
+    # Execute the SQL command
+    cursor.execute(sql)
+    # Fetch all the rows in a list of lists.
+    results = cursor.fetchall()
+    for row in results:
+      id = row[0]
+      mac = row[1]
+      name = row[2]
+      # Now print fetched result
+      print "name=%s,mac=%s,name=%s" % \
+            (name, mac, name)
+  except:
+    print "Error: unable to fecth data"
+
+  return
+
 ##################################################################################################################################################################################################
 # Entry point
 if __name__ == "__main__":
