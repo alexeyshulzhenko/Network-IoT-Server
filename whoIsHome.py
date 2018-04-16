@@ -8,7 +8,7 @@ import time
 
 import nmap
 import requests
-
+import datetime
 
 import database
 
@@ -158,8 +158,6 @@ if __name__ == "__main__":
 
     # print recognizedHosts
 
-    # who joined the network?
-    newHosts = recognizedHosts - activeHosts
 
     # who left the network?
     leftHosts = activeHosts - recognizedHosts

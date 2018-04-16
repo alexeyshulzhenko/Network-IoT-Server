@@ -20,3 +20,14 @@ CREATE TABLE IF NOT EXISTS blacklisted_items(
 
 INSERT INTO blacklisted_items (name, mac)
 VALUES ("router.asus.com", "54:A0:50:D8:0F:18");
+
+
+CREATE TABLE IF NOT EXISTS new_usorted_items(
+    ID int NOT NULL AUTO_INCREMENT,
+    mac varchar(255) NOT NULL,
+    name varchar(255),
+    status int,
+    date_discovered DATETIME,
+    PRIMARY KEY (ID)
+);
+
