@@ -8,9 +8,10 @@ import time
 
 import nmap
 import requests
+
+
 import database
 
-##################################################################################################################################################################################################
 # Scan you local network for all hosts
 def scan():
 
@@ -32,10 +33,18 @@ def scan():
     if "mac" in scanner[ip]["addresses"]:
       host["mac"] = scanner[ip]["addresses"]["mac"].upper()
 
-    hostList.append(host)
+    if scanner[ip].hostname() != '':
+      host["name"] = scanner[ip].hostname()
+    elif scanner[ip].hostname() == '':
+      host["name"] = "blank"
 
+    if "type" in scanner[ip].hostnames():
+      host["type"] = scanner[ip].hostnames()["type"]
+
+
+    hostList.append(host)
+  # print hostList
   return hostList
-##################################################################################################################################################################################################
 
 
 # Get your local network IP address. e.g. 192.168.178.X
@@ -46,7 +55,6 @@ def get_lan_ip():
   except socket.error as e:
     sys.stderr.write(str(e) + "\n") # probably offline / no internet connection
     sys.exit(e.errno)
-##################################################################################################################################################################################################
 
 
 # Build the chat message being send to Slack
@@ -80,7 +88,6 @@ def sendSlackRequest(message):
     "channel" : SlackConfig["channel"]
   })
   requests.post(SlackConfig["webhook_url"], data=payload)
-##################################################################################################################################################################################################
 
 
 # Read the config file
@@ -98,25 +105,24 @@ def parseConfigFile():
 
   try:
     slackConfig = config["slack"]
-    known_hosts = dict()
-
-    for hostname, macs in config["hosts"].iteritems():
-      known_hosts[hostname.title()] = [mac.upper() for mac in macs]
 
   except KeyError as e:
     sys.stderr.write("Please correct your config file. Missing section %s .\n" %str(e))
     sys.exit(0)
 
-  if len(known_hosts) == 0:
-    sys.stderr.write("Oops, you did not specify any known hosts. Please correct your config file.\n")
-    sys.exit(0)
 
   if not "webhook_url" in slackConfig or slackConfig["webhook_url"] is None:
     sys.stderr.write("Oops, you did not set up the Slack integration. Please correct your config file.\n")
     sys.exit(0)
 
-  return slackConfig, known_hosts
+  return slackConfig
 
+
+
+def checkIfDiviceBlacklisted(mac):
+  if mac in database.getBlacklistedDevicesList():
+    return False
+  else: return True
 
 
 
@@ -124,32 +130,30 @@ def parseConfigFile():
 # Entry point
 if __name__ == "__main__":
 
-  SlackConfig, KNOWN_HOSTS_2 = parseConfigFile()
+  SlackConfig = parseConfigFile()
 
   KNOWN_HOSTS = database.getKnownDevicesList()
   # Initialize. Noone is here yet
   activeHosts = set()
 
-  print KNOWN_HOSTS
   while True:
 
     scannedHosts = [host["mac"] for host in scan() if "mac" in host]
     # print scannedHosts - returns the list of scanned devices
 
-
     recognizedHosts = set()
-    for hostName, macs in KNOWN_HOSTS.iteritems():
+    newHosts = set()
+    for hostName, known_macs in KNOWN_HOSTS.iteritems():
 
       # print "knwon ", macs  - returns the list of known MAC adresses
 
 
       for scannedHost in scannedHosts:
         # print "Iteration:   ", scannedHost, macs   - Prints to console pairs, whic are being compared in the moment
-        if scannedHost in macs:
+        if scannedHost in known_macs:
           recognizedHosts.add(hostName)
-
-
-
+        elif checkIfDiviceBlacklisted(hostName):
+          newHosts.add(hostName)
 
 
     # print recognizedHosts

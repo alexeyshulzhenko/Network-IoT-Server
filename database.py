@@ -33,3 +33,31 @@ def getKnownDevicesList():
     except:
        print "Error: unable to fecth data"
 
+
+def getBlacklistedDevicesList():
+# Open database connection
+    db = MySQLdb.connect("localhost","testuser","test623","network_analyzer" )
+
+    blacklisted_hosts = []
+    # prepare a cursor object using cursor() method
+    cursor = db.cursor()
+
+    sql = "select mac from blacklisted_items"
+    try:
+       # Execute the SQL command
+       cursor.execute(sql)
+       # Fetch all the rows in a list of lists.
+       results = cursor.fetchall()
+       for row in results:
+          mac = row[0]
+          # Now print fetched result
+          blacklisted_hosts.extend([mac.upper() for row in results])
+
+          # print "name=%s,mac=%s" % \
+          #        (name, mac)
+
+       # disconnect from server
+       db.close()
+       return blacklisted_hosts
+    except:
+       print "Error: unable to fecth data"
