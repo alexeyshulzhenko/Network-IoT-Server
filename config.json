@@ -1,7 +1,7 @@
 {
   "slack" : {
     "webhook_url" : "https://hooks.slack.com/services/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",
-    "channel" : "#general",
+    "channel" : "#random",
     "botname" : "Secret Office Surveillance Bot"
   },
   "hosts" : {

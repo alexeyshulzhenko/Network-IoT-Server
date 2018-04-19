@@ -43,7 +43,7 @@ def scan():
 
 
     hostList.append(host)
-  # print hostList
+  print hostList
   return hostList
 
 
@@ -58,19 +58,15 @@ def get_lan_ip():
 
 
 # Build the chat message being send to Slack
-def notifySlack(newUsers, leftUsers, existingUsers):
+def notifySlack(newUsers, leftUsers):
 
   message = ""
   if len(newUsers) > 0:
-    message += ", ".join(newUsers) + " just came into the office. "
+    message += ", ".join(newUsers) + " just appeared in the network. "
 
   if len(leftUsers) > 0:
-    message = ", ".join(leftUsers) + " just left the office. "
+    message = ", ".join(leftUsers) + " just left the network. "
 
-  if len(existingUsers) > 0:
-
-    verb = "are" if len(existingUsers) > 1 else "is"
-    message += ", ".join(existingUsers) + " " + verb + " still here."
 
   else:
     message += "No one else is here."
@@ -139,6 +135,7 @@ if __name__ == "__main__":
   while True:
 
     scannedHosts = [host["mac"] for host in scan() if "mac" in host]
+    scannedHostName = [host["name"] for host in scan() if "name" in host]
     # print scannedHosts - returns the list of scanned devices
 
     recognizedHosts = set()
@@ -152,11 +149,9 @@ if __name__ == "__main__":
         # print "Iteration:   ", scannedHost, macs   - Prints to console pairs, whic are being compared in the moment
         if scannedHost in known_macs:
           recognizedHosts.add(hostName)
-        elif checkIfDiviceBlacklisted(hostName):
-          newHosts.add(hostName)
+        elif checkIfDiviceBlacklisted(scannedHost):
+          newHosts.add(scannedHostName[scannedHosts.index(scannedHost)])
 
-
-    # print recognizedHosts
 
 
     # who left the network?
@@ -170,7 +165,7 @@ if __name__ == "__main__":
 
     # announce the new and leaving users in Slack
     if len(newHosts) > 0 or len(leftHosts) > 0:
-      notifySlack(newHosts, leftHosts, activeHosts - leftHosts)
+      notifySlack(newHosts, leftHosts)
 
     # remember everyone for the next scan
     activeHosts = recognizedHosts
